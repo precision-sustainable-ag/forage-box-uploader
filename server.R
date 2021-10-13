@@ -2,9 +2,6 @@ library(shinyWidgets)
 library(stringr)
 library(purrr)
 
-library(promises)
-library(future)
-plan(multisession)
 
 library(AzureStor)
 
