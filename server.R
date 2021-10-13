@@ -115,7 +115,9 @@ server <- function(input, output, session) {
         input$text_date_picker != ""
       ) {
 
-      dt <- lubridate::as_date(input$text_date_picker)
+      # what a weird bug
+      env_offset <- ifelse(this_env == "prod", 1, 0)
+      dt <- lubridate::as_date(input$text_date_picker) + env_offset
 
       if (!is.na(dt) & dt <= Sys.Date()) {
         updateAirDateInput(
