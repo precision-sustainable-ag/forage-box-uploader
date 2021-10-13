@@ -391,7 +391,7 @@ server <- function(input, output, session) {
           glue::glue("{fixes()$prefix}_C_{fixes()$postfix}.txt")
         )
 
-        if (is.null(up1$result)) {
+        if (!is.null(up1$error)) {
 
           sendSweetAlert(
             session, "upload_bar",
@@ -411,7 +411,7 @@ server <- function(input, output, session) {
             value = 50,
             status = "primary"
           )
-        }
+         }
 
         up2 <- safely_upload(
           cont,
@@ -419,7 +419,7 @@ server <- function(input, output, session) {
           glue::glue("{fixes()$prefix}_S_{fixes()$postfix}.txt")
         )
         
-        if (is.null(up2$result)) {
+        if (!is.null(up2$error)) {
 
           sendSweetAlert(
             session, "upload_bar",
@@ -447,8 +447,8 @@ server <- function(input, output, session) {
           glue::glue("{fixes()$prefix}_P_{fixes()$postfix}.txt")
         )
 
-        if (is.null(up3$result)) {
-          
+        if (!is.null(up3$error)) {
+
           sendSweetAlert(
             session, "upload_bar",
             title = "Server is down! Try again.",
