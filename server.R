@@ -315,7 +315,7 @@ server <- function(input, output, session) {
 
     postfix <- paste(
       str_remove_all(input$scan_date_calendar, '-'),
-      uuid::UUIDgenerate(T),
+      uuid::UUIDgenerate(),
       sep = "_"
     )
 
