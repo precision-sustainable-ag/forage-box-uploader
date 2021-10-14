@@ -104,10 +104,6 @@ choices_json = '
             "label": "FFAR Grant Sensor Validation - Predictive Modeling"
         },
         {
-            "value": "FFARSV-LHA",
-            "label": "FFAR Grant Sensor Validation - Laser Height Accuracy"
-        },
-        {
             "value": "LCCBALT",
             "label": "Legume Advanced Line Trial"
         }

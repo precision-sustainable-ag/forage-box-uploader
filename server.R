@@ -132,19 +132,7 @@ server <- function(input, output, session) {
   )
   
   # File things ----
-  # output$show_cards <- eventReactive(
-  #     {
-  #       input$cal_file
-  #       input$scan_file
-  #       input$phys_file
-  #     },
-  #     sum(
-  #       input$cal_file$size %||% 0,
-  #       input$scan_file$size %||% 0,
-  #       input$phys_file$size %||% 0
-  #     ),
-  #     ignoreInit = T
-  # )
+
     output$show_cards <- reactive(
       sum(
         input$cal_file$size %||% 0,
@@ -263,6 +251,7 @@ server <- function(input, output, session) {
   })
   
   # Metadata things ----
+  
   choices_tbl_reactive <- reactive(
     choices_tbl %>% 
       filter(
