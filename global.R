@@ -4,6 +4,10 @@ library(shinyWidgets)
 
 source("secret.R")
 
+un_enframe <- function(tbl) {
+  set_names(tbl[[2]], tbl[[1]])
+}
+
 choices_json = '
 {
     "collab": [
@@ -253,11 +257,17 @@ dropdown_wcc <- function(input, output, session) {
     div(
       selectInput(
         "wcc_location", "Location:", 
-        metadata_values$WCC$location_label
+        metadata_values$WCC %>% 
+          select(location_label, location) %>% 
+          un_enframe() %>% 
+          c("", .)
         ),
       selectInput(
         "wcc_field", "Field ID:", 
-        metadata_values$WCC$field_label
+        metadata_values$WCC %>% 
+          select(field_label, field) %>% 
+          un_enframe() %>% 
+          c("", .)
         )
     )
   })
@@ -278,13 +288,16 @@ update_wcc <- function(input, output, session) {
   choices_r <- reactive(
     metadata_values$WCC %>% 
       filter(
-        str_detect(location_label, input$wcc_location %||% "")
+        str_detect(location, input$wcc_location %||% "")
       )
   )
   
   updateSelectInput(
     session,
     "wcc_field",
-    choices = c("", choices_r()$field_label)
+    choices = choices_r() %>% 
+      select(field_label, field) %>% 
+      un_enframe() %>% 
+      c("", .)
   )
 }
