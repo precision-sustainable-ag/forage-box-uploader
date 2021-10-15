@@ -231,10 +231,19 @@ update_ffar <- function(input, output, session) {
 namer_ffar <- function(input, output, session) {
   reactive({
     req(
-      input$a, input$b
+      input$ffar_collaborator,
+      input$ffar_property,
+      input$ffar_researcher,
+      input$ffar_trial_type
     )
     
-    paste(input$a, input$b, sep = "_")
+    paste(
+      input$ffar_collaborator,
+      input$ffar_property,
+      input$ffar_researcher,
+      input$ffar_trial_type, 
+      sep = "_"
+      )
     
   })
 }
@@ -257,10 +266,10 @@ dropdown_wcc <- function(input, output, session) {
 namer_wcc <- function(input, output, session) {
   reactive({
     req(
-      input$location, input$field
+      input$wcc_location, input$wcc_field
     )
     
-    paste(input$location, input$field, sep = "=")
+    paste(input$wcc_location, input$wcc_field, sep = "_")
     
   })
 }

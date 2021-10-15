@@ -55,7 +55,8 @@ ui <- fluidPage(
     column(
       4,
       h2("Multipurpose Metadata"),
-      uiOutput("metadata_dropdowns")
+      uiOutput("metadata_dropdowns"),
+      uiOutput("name_preview")
     )
   ),
   conditionalPanel(

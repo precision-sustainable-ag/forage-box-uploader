@@ -268,14 +268,7 @@ server <- function(input, output, session) {
     ignoreInit = T
   )
   
-  input_prefix <- reactive({
-    req(input$project)
-    pattern <- metadata_projects %>% 
-        filter(label == input$project) %>% 
-        pull(value) %>% 
-        str_to_lower()
-    paste("^", pattern, "_", sep = "")
-  })
+
   
   observeEvent(
     list(
@@ -291,6 +284,34 @@ server <- function(input, output, session) {
     ),
     ignoreInit = T
   )
+  
+  prefix_reactive <- reactive({
+    req(input$project)
+    
+    pattern <- metadata_projects %>% 
+      filter(label == input$project) %>% 
+      pull(value) %>% 
+      str_to_lower()
+    
+    pattern <- paste("^", pattern, "_", sep = "")
+    purrr::map(
+      str_subset(names(input), pattern),
+      ~input[[.x]]
+    )
+    
+    switch(
+      metadata_projects %>% 
+        filter(label == input$project) %>% 
+        pull(value),
+      "FFAR" = namer_ffar(input, output, session)(),
+      "WCC" = namer_wcc(input, output, session)()
+    )
+  })
+  
+  output$name_preview <- renderText({
+    prefix_reactive()
+  })
+    
   ####
   
   choices_tbl_reactive <- reactive(
