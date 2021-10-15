@@ -251,6 +251,47 @@ server <- function(input, output, session) {
   })
   
   # Metadata things ----
+
+  
+  
+  observeEvent(
+    {
+      input$project
+      },
+    output$metadata_dropdowns <- switch(
+      metadata_projects %>% 
+        filter(label == input$project) %>% 
+        pull(value),
+      "FFAR" = dropdown_ffar(input, output, session),
+      "WCC" = dropdown_wcc(input, output, session)
+    ),
+    ignoreInit = T
+  )
+  
+  input_prefix <- reactive({
+    req(input$project)
+    pattern <- metadata_projects %>% 
+        filter(label == input$project) %>% 
+        pull(value) %>% 
+        str_to_lower()
+    paste("^", pattern, "_", sep = "")
+  })
+  
+  observeEvent(
+    list(
+      input$ffar_collaborator,
+      input$wcc_location
+    ),
+    switch(
+      metadata_projects %>% 
+        filter(label == input$project) %>% 
+        pull(value),
+      "FFAR" = update_ffar(input, output, session),
+      "WCC" = update_wcc(input, output, session)
+    ),
+    ignoreInit = T
+  )
+  ####
   
   choices_tbl_reactive <- reactive(
     choices_tbl %>% 

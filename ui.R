@@ -35,7 +35,7 @@ ui <- fluidPage(
   ),
   fluidRow(
     column(
-      6,
+      4,
       h2("Scan Event Metadata"),
       selectInput(
         "collaborator",
@@ -45,17 +45,17 @@ ui <- fluidPage(
       uiOutput("picker_prop"),
       uiOutput("picker_pi"),
       uiOutput("picker_trial")
-      # selectInput(
-      #   "trial_type",        
-      #   "Trial Type",
-      #   choices = c("", choices_tbls$tt$tt_label)
-      # )
     ),
     column(
-      6,
+      4,
       h2("Scan Event Date"),
       uiOutput("scan_date_calendar"),
       uiOutput("text_date_picker")
+    ),
+    column(
+      4,
+      h2("Multipurpose Metadata"),
+      uiOutput("metadata_dropdowns")
     )
   ),
   conditionalPanel(

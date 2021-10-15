@@ -162,3 +162,120 @@ metadata_projects <- tribble(
   "CE1",  "PSA Common Experiment 1",
   "WCC",  "WCC Remote Sensing Validation"
 )
+
+metadata_values <- list(
+  FFAR = choices_tbl,
+  WCC = tribble(
+    ~location, ~location_label, ~field, ~field_label,
+    "onfarm", "Eastern Shore", "jb", "Joe Brown",
+    "barc",   "BARC",          "130", "1-30"
+  )
+)
+#### modules ----
+dropdown_ffar <- function(input, output, session) {
+  renderUI({
+
+    div(
+      selectInput(
+        "ffar_collaborator",
+        "Collaborator",
+        choices = c("", choices_tbl$collab_label)
+      ),
+      selectInput(
+        "ffar_property",
+        "Property:",
+        choices = c("", choices_tbl$prop_label)
+      ),
+      selectInput(
+        "ffar_researcher",
+        "Researcher:",
+        choices = c("", choices_tbl$pi_label)
+      ),
+      selectInput(
+        "ffar_trial_type",
+        "Trial Type:",
+        choices = c("", choices_tbl$tt_label)
+      )
+    )
+  })
+  
+}
+
+update_ffar <- function(input, output, session) {
+  choices_tbl_reactive <- reactive(
+    choices_tbl %>% 
+      filter(
+        str_detect(collab_label, input$ffar_collaborator %||% "")
+      )
+  )
+  
+  updateSelectInput(
+    session,
+    "ffar_property",
+    choices = c("", choices_tbl_reactive()$prop_label)
+  )
+  updateSelectInput(
+    session,
+    "ffar_researcher",
+    choices = c("", choices_tbl_reactive()$pi_label)
+  )
+  updateSelectInput(
+    session,
+    "ffar_trial_type",
+    choices = c("", choices_tbl_reactive()$tt_label)
+  )
+  
+}
+
+
+namer_ffar <- function(input, output, session) {
+  reactive({
+    req(
+      input$a, input$b
+    )
+    
+    paste(input$a, input$b, sep = "_")
+    
+  })
+}
+
+dropdown_wcc <- function(input, output, session) {
+  renderUI({
+    div(
+      selectInput(
+        "wcc_location", "Location:", 
+        metadata_values$WCC$location_label
+        ),
+      selectInput(
+        "wcc_field", "Field ID:", 
+        metadata_values$WCC$field_label
+        )
+    )
+  })
+}
+
+namer_wcc <- function(input, output, session) {
+  reactive({
+    req(
+      input$location, input$field
+    )
+    
+    paste(input$location, input$field, sep = "=")
+    
+  })
+}
+
+update_wcc <- function(input, output, session) {
+  choices_r <- reactive(
+    metadata_values$WCC %>% 
+      filter(
+        str_detect(location_label, input$wcc_location %||% "")
+      )
+  )
+  
+  updateSelectInput(
+    session,
+    "wcc_field",
+    choices = c("", choices_r()$field_label)
+  )
+}
