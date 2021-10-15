@@ -275,6 +275,14 @@ server <- function(input, output, session) {
       )
   )  
   
+  output$picker_trial <- renderUI(
+    selectInput(
+        "trial_type",
+        "Trial Type",
+        choices = c("", choices_tbl_reactive()$tt_label)
+      )
+  )  
+  
   fixes <- reactive({
     req(
       input$collaborator,
@@ -287,16 +295,13 @@ server <- function(input, output, session) {
       filter(
         collab_label == input$collaborator,
         prop_label == input$property,
-        pi_label == input$researcher
+        pi_label == input$researcher,
+        tt_label == input$trial_type
       )
-
-    trial <- choices_tbls$tt %>%
-      filter(tt_label == input$trial_type) %>%
-      pull(tt_value)
 
     prefix <- paste(
       id_row$collaborator,
-      trial,
+      id_row$tt_value, 
       id_row$prop_value,
       id_row$pi_value,
       sep = "_"

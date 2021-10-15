@@ -152,5 +152,13 @@ choices_tbls <- jsonlite::fromJSON(choices_json) %>%
 
 choices_tbl <- choices_tbls %>% 
   purrr::list_modify("tt" = NULL) %>% 
-  purrr::reduce(full_join, by = "collaborator")
+  purrr::reduce(full_join, by = "collaborator") %>% 
+  full_join(choices_tbls$tt, by = character())
 
+
+metadata_projects <- tribble(
+  ~value, ~label,
+  "FFAR", "FFAR - Breeding and Validation",
+  "CE1",  "PSA Common Experiment 1",
+  "WCC",  "WCC Remote Sensing Validation"
+)

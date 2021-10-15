@@ -11,18 +11,25 @@ ui <- fluidPage(
   titlePanel("Forage Box Cover Crop File Submission"),
   fluidRow(
     column(
-      6, 
+      4, 
       textInput(
         "username", "Email:"
       )
     ),
     column(
-      6,
+      4,
       searchInput(
         "password", "Password:",
         btnSearch = div(icon("ok", lib = "glyphicon"), style = "font-size:1.25em !important;"), 
         btnReset = NULL, 
         resetValue = ""
+      )
+    ),
+    column(
+      4,
+      selectInput(
+        "project", "Project:",
+        choices = c("", metadata_projects$label),
       )
     )
   ),
@@ -37,11 +44,12 @@ ui <- fluidPage(
       ),
       uiOutput("picker_prop"),
       uiOutput("picker_pi"),
-      selectInput(
-        "trial_type",        
-        "Trial Type",
-        choices = c("", choices_tbls$tt$tt_label)
-      )
+      uiOutput("picker_trial")
+      # selectInput(
+      #   "trial_type",        
+      #   "Trial Type",
+      #   choices = c("", choices_tbls$tt$tt_label)
+      # )
     ),
     column(
       6,
