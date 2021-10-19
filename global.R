@@ -184,7 +184,9 @@ dropdown_ffar <- function(input, output, session) {
       selectInput(
         "ffar_collaborator",
         "Collaborator",
-        choices = c("", choices_tbl$collab_label)
+        choices = choices_tbl %>% 
+          select(collab_label, collaborator) %>% 
+          un_enframe()
       ),
       selectInput(
         "ffar_property",
@@ -210,7 +212,8 @@ update_ffar <- function(input, output, session) {
   choices_tbl_reactive <- reactive(
     choices_tbl %>%
       filter(
-        str_detect(collab_label, input$ffar_collaborator %||% "")
+        str_detect(collaborator, input$ffar_collaborator %||% "")
+        # str_detect(collab_label, input$ffar_collaborator %||% "")
       )
   )
 
