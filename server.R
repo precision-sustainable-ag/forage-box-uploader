@@ -3,6 +3,7 @@ library(stringr)
 library(purrr)
 
 
+
 library(AzureStor)
 
 
@@ -131,9 +132,22 @@ server <- function(input, output, session) {
     ignoreInit = T
   )
   
+  observeEvent(
+    list(
+      input$cal_file,
+      input$scan_file,
+      input$phys_file
+    ), {
+      iv <- InputValidator$new()
+      iv$add_rule("scan_date_calendar", sv_required())
+      iv$add_rule("text_date_picker", sv_required())
+      iv$enable()
+    }
+  )
+  
   # File things ----
 
-    output$show_cards <- reactive(
+  output$show_cards <- reactive(
       sum(
         input$cal_file$size %||% 0,
         input$scan_file$size %||% 0,
@@ -261,7 +275,8 @@ server <- function(input, output, session) {
     output$metadata_dropdowns <- switch(
       metadata_projects %>% 
         filter(label == input$project) %>% 
-        pull(value),
+        pull(value) %>% 
+        paste(collapse = "_"),
       "FFAR" = dropdown_ffar(input, output, session),
       "WCC" = dropdown_wcc(input, output, session)
     ),
@@ -278,7 +293,8 @@ server <- function(input, output, session) {
     switch(
       metadata_projects %>% 
         filter(label == input$project) %>% 
-        pull(value),
+        pull(value) %>% 
+        paste(collapse = "_"),
       "FFAR" = update_ffar(input, output, session),
       "WCC" = update_wcc(input, output, session)
     ),
@@ -302,7 +318,8 @@ server <- function(input, output, session) {
     switch(
       metadata_projects %>% 
         filter(label == input$project) %>% 
-        pull(value),
+        pull(value) %>% 
+        paste(collapse = "_"),
       "FFAR" = namer_ffar(input, output, session)(),
       "WCC" = namer_wcc(input, output, session)()
     )
@@ -311,6 +328,23 @@ server <- function(input, output, session) {
   output$name_preview <- renderText({
     prefix_reactive()
   })
+  
+  observeEvent(
+    list(
+      input$cal_file,
+      input$scan_file,
+      input$phys_file
+    ),
+    switch(
+      metadata_projects %>%
+        filter(label == input$project) %>%
+        pull(value) %>% 
+        paste(collapse = "_"),
+      "FFAR" = remind_ffar(input, output, session),
+      "WCC" = remind_wcc(input, output, session)
+    ),
+    ignoreInit = T
+  )
     
   ####
   
@@ -413,7 +447,7 @@ server <- function(input, output, session) {
       safely_upload <- purrr::safely(storage_upload)
 
       cont <- storage_container(
-        "https://mytestbed.blob.core.windows.net/landing",
+        endpoint = endpoint,
         sas = sas
         )
 

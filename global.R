@@ -1,6 +1,7 @@
 library(shiny)
 library(dplyr)
 library(shinyWidgets)
+library(shinyvalidate)
 
 source("secret.R")
 
@@ -207,12 +208,12 @@ dropdown_ffar <- function(input, output, session) {
 
 update_ffar <- function(input, output, session) {
   choices_tbl_reactive <- reactive(
-    choices_tbl %>% 
+    choices_tbl %>%
       filter(
         str_detect(collab_label, input$ffar_collaborator %||% "")
       )
   )
-  
+
   updateSelectInput(
     session,
     "ffar_property",
@@ -250,6 +251,22 @@ namer_ffar <- function(input, output, session) {
       )
     
   })
+}
+
+remind_ffar <- function(input, output, session) {
+  iv <- InputValidator$new()
+  purrr::walk(
+    c(
+      "ffar_collaborator",
+      "ffar_property",
+      "ffar_researcher",
+      "ffar_trial_type"
+    ),
+    ~{
+      iv$add_rule(.x, sv_required())
+    }
+  )
+  iv$enable()
 }
 
 dropdown_wcc <- function(input, output, session) {
@@ -300,4 +317,18 @@ update_wcc <- function(input, output, session) {
       un_enframe() %>% 
       c("", .)
   )
+}
+
+remind_wcc<- function(input, output, session) {
+  iv <- InputValidator$new()
+  purrr::walk(
+    c(
+      "wcc_location",
+      "wcc_field"
+    ),
+    ~{
+      iv$add_rule(.x, sv_required())
+    }
+  )
+  iv$enable()
 }

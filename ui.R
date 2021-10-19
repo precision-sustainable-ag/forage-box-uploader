@@ -2,11 +2,11 @@ library(shiny)
 library(dplyr)
 library(shinyWidgets)
 
-useSweetAlert()
 
 
 
 ui <- fluidPage(
+  useSweetAlert(),
   theme = bslib::bs_theme(version = 5, bootswatch = "yeti"),
   titlePanel("Forage Box Cover Crop File Submission"),
   fluidRow(
