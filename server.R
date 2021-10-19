@@ -14,6 +14,15 @@ options(shiny.maxRequestSize = 30*1024^2)
 server <- function(input, output, session) {
   
   # Allow uploads on validation ----
+  observeEvent(
+    input$project, {
+      pw_iv <- InputValidator$new()
+      pw_iv$add_rule("password", sv_required())
+      pw_iv$enable()
+    },
+    ignoreInit = T
+    )
+  
   observeEvent(input$password_search, {
     if (input$password == valid_pw) {
       sendSweetAlert(
@@ -139,7 +148,7 @@ server <- function(input, output, session) {
       input$phys_file
     ), {
       iv <- InputValidator$new()
-      iv$add_rule("scan_date_calendar", sv_required())
+      # iv$add_rule("scan_date_calendar", sv_required())
       iv$add_rule("text_date_picker", sv_required())
       iv$enable()
     }
