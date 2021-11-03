@@ -468,7 +468,10 @@ server <- function(input, output, session) {
       input$cal_file,
       input$scan_file,
       input$phys_file,
-      fixes()
+      fixes(),
+      iv_c$is_valid(),
+      iv_p$is_valid(),
+      iv_s$is_valid()
       )
     
     actionBttn(
