@@ -213,7 +213,6 @@ update_ffar <- function(input, output, session) {
     choices_tbl %>%
       filter(
         str_detect(collaborator, input$ffar_collaborator %||% "")
-        # str_detect(collab_label, input$ffar_collaborator %||% "")
       )
   )
 
