@@ -50,6 +50,7 @@ server <- function(input, output, session) {
     )
   })
   
+  
   output$upload_scan <- renderUI({
     input$trash_scan
     
@@ -276,6 +277,8 @@ server <- function(input, output, session) {
   )  
   
   fixes <- reactive({
+    input$submit_more
+    
     req(
       input$collaborator,
       input$property,
@@ -329,6 +332,24 @@ server <- function(input, output, session) {
       size = "lg",
       color = "success"
       )
+  })
+  
+  output$submit_more <- renderUI({
+    
+    req(
+      input$cal_file,
+      input$scan_file,
+      input$phys_file,
+      fixes()
+    )
+    
+    actionBttn(
+      "submit_more", "Reset and submit more files",
+      block = T,
+      style = "fill",
+      size = "lg",
+      color = "default"
+    )
   })
   
   observeEvent(
