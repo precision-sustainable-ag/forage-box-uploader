@@ -50,8 +50,10 @@ server <- function(input, output, session) {
     )
   })
   
+  
   output$upload_scan <- renderUI({
     input$trash_scan
+    input$submit_more
     
     fileInput(
       "scan_file", label = NULL,
@@ -69,6 +71,20 @@ server <- function(input, output, session) {
       accept = "text/plain", 
     )
   })
+  
+  reset_state <- reactiveValues(
+    file_active = F
+  )
+  
+  observeEvent(
+    input$scan_file,
+    reset_state$file_active <- T
+  )
+  
+  observeEvent(
+    input$submit_more,
+    reset_state$file_active <- F
+  )
 
   # Date things ----
   output$scan_date_calendar <- renderUI({
@@ -145,6 +161,7 @@ server <- function(input, output, session) {
   
   cal_file_data <- reactive({
     req(input$cal_file)
+
     readLines(
       input$cal_file$datapath, n = 5,
       warn = F, skipNul = T
@@ -154,6 +171,8 @@ server <- function(input, output, session) {
   
   scan_file_data <- reactive({
     req(input$scan_file)
+    req(reset_state$file_active)
+    
     readLines(
       input$scan_file$datapath, n = 5,
       warn = F, skipNul = T
@@ -276,6 +295,8 @@ server <- function(input, output, session) {
   )  
   
   fixes <- reactive({
+    input$submit_more
+    
     req(
       input$collaborator,
       input$property,
@@ -319,7 +340,8 @@ server <- function(input, output, session) {
       input$cal_file,
       input$scan_file,
       input$phys_file,
-      fixes()
+      fixes(),
+      reset_state$file_active
       )
     
     actionBttn(
@@ -329,6 +351,24 @@ server <- function(input, output, session) {
       size = "lg",
       color = "success"
       )
+  })
+  
+  output$submit_more <- renderUI({
+    
+    req(
+      input$cal_file,
+      input$scan_file,
+      input$phys_file,
+      fixes()
+    )
+    
+    actionBttn(
+      "submit_more", "Reset and submit more files",
+      block = T,
+      style = "fill",
+      size = "lg",
+      color = "default"
+    )
   })
   
   observeEvent(
