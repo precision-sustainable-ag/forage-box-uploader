@@ -357,7 +357,7 @@ server <- function(input, output, session) {
       safely_upload <- purrr::safely(storage_upload)
 
       cont <- storage_container(
-        "https://mytestbed.blob.core.windows.net/landing",
+        endpoint = endpoint,
         sas = sas
         )
 
