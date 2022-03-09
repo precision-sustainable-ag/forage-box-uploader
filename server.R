@@ -336,7 +336,8 @@ server <- function(input, output, session) {
   observeEvent(
     list(
       input$ffar_collaborator,
-      input$wcc_location
+      input$wcc_location,
+      input$wcc_field
     ),
     switch(
       metadata_projects %>% 

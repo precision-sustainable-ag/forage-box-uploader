@@ -195,7 +195,7 @@ metadata_values <- list(
       by = character()
     ),
   WCC = tribble(
-    ~location, ~location_label, ~field, ~field_label, ~species
+    ~location, ~location_label, ~field, ~field_label, ~species,
     "onfarm", "Eastern Shore", "jb",   "Joe Brown",   "Rye",
     "barc",   "BARC",          "130",  "1-30",        "Clover",
     "barc",   "BARC",          "NASA", "NASA Hill",    "Rye-Vetch Mix"
@@ -359,29 +359,38 @@ namer_wcc <- function(input, output, session) {
 }
 
 update_wcc <- function(input, output, session) {
-  choices_r <- reactive(
-    metadata_values$WCC %>% 
-      filter(
-        str_detect(location, input$wcc_location %||% "")
-      ) %>% 
-      filter(
-        str_detect(field, input$field %||% "")
-      )
-  )
+  # choices_r <- reactive(
+  #   metadata_values$WCC %>% 
+  #     filter(
+  #       str_detect(location, input$wcc_location %||% "")
+  #     ) %>% 
+  #     filter(
+  #       str_detect(field, input$wcc_field %||% "")
+  #     )
+  # )
   
   updateSelectInput(
     session,
     "wcc_field",
-    choices = choices_r() %>% 
+    choices = metadata_values$WCC %>% 
+      filter(
+        str_detect(location, input$wcc_location %||% "")
+      ) %>% 
       select(field_label, field) %>% 
       un_enframe() %>% 
-      c("", .)
+      c("", .),
+    selected = input$wcc_field
   )
   
   updateSelectInput(
     session,
     "wcc_species",
-    choices = c("", choices_r()$species)
+    choices = metadata_values$WCC %>% 
+      filter(
+        str_detect(field, input$wcc_field %||% "")
+      ) %>% 
+      pull(species) %>% 
+      c("", .)
   )
 }
 
