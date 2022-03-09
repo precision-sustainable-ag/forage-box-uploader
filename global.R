@@ -173,8 +173,8 @@ metadata_values <- list(
     full_join(
       tibble(
         species = c(
-          "B. Napus", "B. Rapa", "B. Oleracea", "Crimson Clover", 
-          "Rye", "Oat", "Hairy Vetch", "Winter Pea"
+          "All", "B. Napus", "B. Rapa", "B. Oleracea", 
+          "Crimson Clover", "Rye", "Oat", "Hairy Vetch", "Winter Pea"
         )
       ),
       by = character()
@@ -186,26 +186,20 @@ metadata_values <- list(
     )
   ) %>% 
     full_join(
-      tibble(
+      expand.grid(
         species = c(
           "Rye", "Legume", "Rye/Legume Mix", "Fallow"
-        )
+        ),
+        rep = paste0("rep", 1:4)
       ),
       by = character()
     ),
   WCC = tribble(
-    ~location, ~location_label, ~field, ~field_label,
-    "onfarm", "Eastern Shore", "jb", "Joe Brown",
-    "barc",   "BARC",          "130", "1-30"
-  ) %>% 
-    full_join(
-      tibble(
-        species = c(
-          "Rye", "Legume", "Rye/Legume Mix", "Fallow"
-        )
-      ),
-      by = character()
-    )
+    ~location, ~location_label, ~field, ~field_label, ~species
+    "onfarm", "Eastern Shore", "jb",   "Joe Brown",   "Rye",
+    "barc",   "BARC",          "130",  "1-30",        "Clover",
+    "barc",   "BARC",          "NASA", "NASA Hill",    "Rye-Vetch Mix"
+  ) 
 )
 #### modules ----
 dropdown_ffar <- function(input, output, session) {
@@ -337,7 +331,12 @@ dropdown_wcc <- function(input, output, session) {
           select(field_label, field) %>% 
           un_enframe() %>% 
           c("", .)
-        )
+        ),
+      selectInput(
+        "wcc_species",
+        "Species:",
+        choices = c("", metadata_values$WCC$species) %>% unique()
+      )
     )
   })
 }
@@ -352,6 +351,7 @@ namer_wcc <- function(input, output, session) {
       "WCC",
       input$wcc_location, 
       input$wcc_field, 
+      paste0(input$wcc_species, collapse = "~"),
       sep = "_"
       )
     
@@ -363,6 +363,9 @@ update_wcc <- function(input, output, session) {
     metadata_values$WCC %>% 
       filter(
         str_detect(location, input$wcc_location %||% "")
+      ) %>% 
+      filter(
+        str_detect(field, input$field %||% "")
       )
   )
   
@@ -374,14 +377,21 @@ update_wcc <- function(input, output, session) {
       un_enframe() %>% 
       c("", .)
   )
+  
+  updateSelectInput(
+    session,
+    "wcc_species",
+    choices = c("", choices_r()$species)
+  )
 }
 
-remind_wcc<- function(input, output, session) {
+remind_wcc <- function(input, output, session) {
   iv <- InputValidator$new()
   purrr::walk(
     c(
       "wcc_location",
-      "wcc_field"
+      "wcc_field",
+      "wcc_species"
     ),
     ~{
       iv$add_rule(.x, sv_required())

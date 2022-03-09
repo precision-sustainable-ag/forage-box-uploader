@@ -54,7 +54,7 @@ ui <- fluidPage(
     ),
     column(
       8,
-      h2("Multipurpose Metadata"),
+      h2("Scan Metadata"),
       selectInput(
         "box_type", "Box Type:",
         choices = list(
