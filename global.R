@@ -245,6 +245,7 @@ namer_ffar <- function(input, output, session) {
     )
     
     paste(
+      "FFAR",
       input$ffar_collaborator,
       input$ffar_property,
       input$ffar_researcher,
@@ -298,7 +299,12 @@ namer_wcc <- function(input, output, session) {
       input$wcc_location, input$wcc_field
     )
     
-    paste(input$wcc_location, input$wcc_field, sep = "_")
+    paste(
+      "WCC",
+      input$wcc_location, 
+      input$wcc_field, 
+      sep = "_"
+      )
     
   })
 }

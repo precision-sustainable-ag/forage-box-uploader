@@ -373,9 +373,9 @@ server <- function(input, output, session) {
     )
   })
   
-  output$name_preview <- renderText({
-    prefix_reactive()
-  })
+  # output$name_preview <- renderText({
+  #   prefix_reactive()
+  # })
   
   observeEvent(
     list(
@@ -443,7 +443,11 @@ server <- function(input, output, session) {
     #     tt_label == input$trial_type
     #   )
 
-    prefix <- prefix_reactive()
+    prefix <- paste(
+      input$box_type, 
+      prefix_reactive(), 
+      sep = "_"
+      )
     #   paste(
     #   id_row$collaborator,
     #   id_row$tt_value, 
