@@ -169,12 +169,43 @@ metadata_projects <- tribble(
 )
 
 metadata_values <- list(
-  FFAR = choices_tbl,
+  FFAR = choices_tbl %>% 
+    full_join(
+      tibble(
+        species = c(
+          "B. Napus", "B. Rapa", "B. Oleracea", "Crimson Clover", 
+          "Rye", "Oat", "Hairy Vetch", "Winter Pea"
+        )
+      ),
+      by = character()
+    ),
+  CE1 = tibble(
+    location = c(
+      "DE", "FL", "IL", "IN", "KS", "KY", "LA", 
+      "MD", "NC", "NE", "NY", "PA", "SC", "VT", "WI"
+    )
+  ) %>% 
+    full_join(
+      tibble(
+        species = c(
+          "Rye", "Legume", "Rye/Legume Mix", "Fallow"
+        )
+      ),
+      by = character()
+    ),
   WCC = tribble(
     ~location, ~location_label, ~field, ~field_label,
     "onfarm", "Eastern Shore", "jb", "Joe Brown",
     "barc",   "BARC",          "130", "1-30"
-  )
+  ) %>% 
+    full_join(
+      tibble(
+        species = c(
+          "Rye", "Legume", "Rye/Legume Mix", "Fallow"
+        )
+      ),
+      by = character()
+    )
 )
 #### modules ----
 dropdown_ffar <- function(input, output, session) {
@@ -183,26 +214,33 @@ dropdown_ffar <- function(input, output, session) {
     div(
       selectInput(
         "ffar_collaborator",
-        "Collaborator",
-        choices = choices_tbl %>% 
+        "Collaborator:",
+        choices = metadata_values$FFAR %>% 
           select(collab_label, collaborator) %>% 
+          distinct() %>% 
           un_enframe()
       ),
       selectInput(
         "ffar_property",
         "Property:",
-        choices = c("", choices_tbl$prop_label)
+        choices = c("", metadata_values$FFAR$prop_label) %>% unique()
       ),
       selectInput(
         "ffar_researcher",
         "Researcher:",
-        choices = c("", choices_tbl$pi_label)
+        choices = c("", metadata_values$FFAR$pi_label) %>% unique()
       ),
       selectInput(
         "ffar_trial_type",
         "Trial Type:",
-        choices = c("", choices_tbl$tt_label)
-      )
+        choices = c("", metadata_values$FFAR$tt_label) %>% unique()
+      ),
+      selectInput(
+        "ffar_species",
+        "Species (choose all needed, backspace to remove):",
+        choices = c(metadata_values$FFAR$species) %>% unique(),
+        multiple = T
+        )
     )
   })
   
@@ -210,7 +248,7 @@ dropdown_ffar <- function(input, output, session) {
 
 update_ffar <- function(input, output, session) {
   choices_tbl_reactive <- reactive(
-    choices_tbl %>%
+    metadata_values$FFAR %>%
       filter(
         str_detect(collaborator, input$ffar_collaborator %||% "")
       )
@@ -250,6 +288,7 @@ namer_ffar <- function(input, output, session) {
       input$ffar_property,
       input$ffar_researcher,
       input$ffar_trial_type, 
+      paste(input$ffar_species, collapse = "~"),
       sep = "_"
       )
     
@@ -263,7 +302,8 @@ remind_ffar <- function(input, output, session) {
       "ffar_collaborator",
       "ffar_property",
       "ffar_researcher",
-      "ffar_trial_type"
+      "ffar_trial_type",
+      "ffar_species"
     ),
     ~{
       iv$add_rule(.x, sv_required())
