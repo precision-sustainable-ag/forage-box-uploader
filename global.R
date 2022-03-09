@@ -351,7 +351,7 @@ namer_wcc <- function(input, output, session) {
       "WCC",
       input$wcc_location, 
       input$wcc_field, 
-      paste0(input$wcc_species, collapse = "~"),
+      input$wcc_species,
       sep = "_"
       )
     
