@@ -396,60 +396,61 @@ server <- function(input, output, session) {
     
   ####
   
-  choices_tbl_reactive <- reactive(
-    choices_tbl %>% 
-      filter(
-        str_detect(collab_label, input$collaborator %||% "")
-      )
-  )
-  
-  output$picker_prop <- renderUI(
-    selectInput(
-        "property",
-        "Property",
-        choices = c("", choices_tbl_reactive()$prop_label)
-      )
-  )  
-  
-  output$picker_pi <- renderUI(
-    selectInput(
-        "researcher",
-        "Researcher",
-        choices = c("", choices_tbl_reactive()$pi_label)
-      )
-  )  
-  
-  output$picker_trial <- renderUI(
-    selectInput(
-        "trial_type",
-        "Trial Type",
-        choices = c("", choices_tbl_reactive()$tt_label)
-      )
-  )  
+  # choices_tbl_reactive <- reactive(
+  #   choices_tbl %>% 
+  #     filter(
+  #       str_detect(collab_label, input$collaborator %||% "")
+  #     )
+  # )
+  # 
+  # output$picker_prop <- renderUI(
+  #   selectInput(
+  #       "property",
+  #       "Property",
+  #       choices = c("", choices_tbl_reactive()$prop_label)
+  #     )
+  # )  
+  # 
+  # output$picker_pi <- renderUI(
+  #   selectInput(
+  #       "researcher",
+  #       "Researcher",
+  #       choices = c("", choices_tbl_reactive()$pi_label)
+  #     )
+  # )  
+  # 
+  # output$picker_trial <- renderUI(
+  #   selectInput(
+  #       "trial_type",
+  #       "Trial Type",
+  #       choices = c("", choices_tbl_reactive()$tt_label)
+  #     )
+  # )  
   
   fixes <- reactive({
     req(
-      input$collaborator,
-      input$property,
-      input$researcher,
-      input$trial_type,
+      # input$collaborator,
+      # input$property,
+      # input$researcher,
+      # input$trial_type,
       input$scan_date_calendar
     )
-    id_row <- choices_tbl %>%
-      filter(
-        collab_label == input$collaborator,
-        prop_label == input$property,
-        pi_label == input$researcher,
-        tt_label == input$trial_type
-      )
+    # id_row <- choices_tbl %>%
+    #   filter(
+    #     collab_label == input$collaborator,
+    #     prop_label == input$property,
+    #     pi_label == input$researcher,
+    #     tt_label == input$trial_type
+    #   )
 
-    prefix <- paste(
-      id_row$collaborator,
-      id_row$tt_value, 
-      id_row$prop_value,
-      id_row$pi_value,
-      sep = "_"
-    )
+    prefix <- prefix_reactive()
+    #   paste(
+    #   id_row$collaborator,
+    #   id_row$tt_value, 
+    #   id_row$prop_value,
+    #   id_row$pi_value,
+    #   sep = "_"
+    # )
 
     postfix <- paste(
       str_remove_all(input$scan_date_calendar, '-'),

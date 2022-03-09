@@ -19,7 +19,7 @@ ui <- fluidPage(
     column(
       4,
       searchInput(
-        "password", "Password:",
+        "password", div("Password:", class = "control-label"),
         btnSearch = div(icon("ok", lib = "glyphicon"), style = "font-size:1.25em !important;"), 
         btnReset = NULL, 
         resetValue = ""
@@ -34,18 +34,18 @@ ui <- fluidPage(
     )
   ),
   fluidRow(
-    column(
-      4,
-      h2("Scan Event Metadata"),
-      selectInput(
-        "collaborator",
-        "Collaborator",
-        choices = c("", choices_tbl$collab_label)
-      ),
-      uiOutput("picker_prop"),
-      uiOutput("picker_pi"),
-      uiOutput("picker_trial")
-    ),
+    # column(
+    #   4,
+    #   h2("Scan Event Metadata"),
+    #   selectInput(
+    #     "collaborator",
+    #     "Collaborator",
+    #     choices = c("", choices_tbl$collab_label)
+    #   ),
+    #   uiOutput("picker_prop"),
+    #   uiOutput("picker_pi"),
+    #   uiOutput("picker_trial")
+    # ),
     column(
       4,
       h2("Scan Event Date"),
