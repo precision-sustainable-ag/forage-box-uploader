@@ -173,7 +173,7 @@ metadata_values <- list(
     full_join(
       tibble(
         species = c(
-          "All", "B. Napus", "B. Rapa", "B. Oleracea", 
+          "All", "B. Napus Dwarf Essex", "B. Napus Winfred", "B. Rapa", "B. Oleracea", 
           "Crimson Clover", "Rye", "Oat", "Hairy Vetch", "Winter Pea"
         )
       ),
@@ -195,10 +195,11 @@ metadata_values <- list(
       by = character()
     ),
   WCC = tribble(
-    ~location, ~location_label, ~field, ~field_label, ~species,
-    "onfarm", "Eastern Shore", "jb",   "Joe Brown",   "Rye",
-    "barc",   "BARC",          "130",  "1-30",        "Clover",
-    "barc",   "BARC",          "NASA", "NASA Hill",    "Rye-Vetch Mix"
+    ~location,    ~location_label,    ~field,    ~field_label,    ~species,
+    "onfarm",     "Eastern Shore",    "jb",      "Joe Brown",     "ABC",
+    "BARC-Prod",  "BARC Production",  "130",     "1-30",          "DEF",
+    "BARC-Prod",  "BARC",             "NASA",    "NASA Hill",     "GHI",
+    "BARC-SF",    "South Farm",       "MIT",     "Across from the pumpkins", "JKL"
   ) 
 )
 #### modules ----
@@ -339,6 +340,14 @@ dropdown_wcc <- function(input, output, session) {
       )
     )
   })
+}
+
+modal_wcc <- function(input, output, session) {
+  modalDialog(
+    title = "Field IDs",
+    h2(input$wcc_location_label),
+    img(src = glue::glue("{input$project}_{input$location}.jpg"))
+  )
 }
 
 namer_wcc <- function(input, output, session) {
