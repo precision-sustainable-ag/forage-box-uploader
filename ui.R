@@ -53,13 +53,8 @@ ui <- fluidPage(
       uiOutput("text_date_picker")
     ),
     column(
-      4,
+      8,
       h2("Multipurpose Metadata"),
-      uiOutput("metadata_dropdowns")
-    ),
-    column(
-      4,
-      h2("Equipment Version"),
       selectInput(
         "box_type", "Box Type:",
         choices = list(
@@ -67,7 +62,8 @@ ui <- fluidPage(
           "214 - GeoScout" = "box214v2"
         ),
         selected = "box214v2"
-      )
+      ),
+      uiOutput("metadata_dropdowns")
     )
   ),
   conditionalPanel(

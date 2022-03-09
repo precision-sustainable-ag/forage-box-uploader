@@ -210,37 +210,46 @@ metadata_values <- list(
 #### modules ----
 dropdown_ffar <- function(input, output, session) {
   renderUI({
-
-    div(
-      selectInput(
-        "ffar_collaborator",
-        "Collaborator:",
-        choices = metadata_values$FFAR %>% 
-          select(collab_label, collaborator) %>% 
-          distinct() %>% 
-          un_enframe()
+    
+    fluidRow(
+      column(
+        6,
+        selectInput(
+          "ffar_collaborator",
+          "Collaborator:",
+          choices = metadata_values$FFAR %>% 
+            select(collab_label, collaborator) %>% 
+            distinct() %>% 
+            un_enframe() %>% 
+            {c(" " = "", .)}
+        ),
+        selectInput(
+          "ffar_property",
+          "Property:",
+          choices = c("", metadata_values$FFAR$prop_label) %>% unique()
+        ),
+        selectInput(
+          "ffar_researcher",
+          "Researcher:",
+          choices = c("", metadata_values$FFAR$pi_label) %>% unique()
+        ),
       ),
-      selectInput(
-        "ffar_property",
-        "Property:",
-        choices = c("", metadata_values$FFAR$prop_label) %>% unique()
-      ),
-      selectInput(
-        "ffar_researcher",
-        "Researcher:",
-        choices = c("", metadata_values$FFAR$pi_label) %>% unique()
-      ),
-      selectInput(
-        "ffar_trial_type",
-        "Trial Type:",
-        choices = c("", metadata_values$FFAR$tt_label) %>% unique()
-      ),
-      selectInput(
-        "ffar_species",
-        "Species (choose all needed, backspace to remove):",
-        choices = c(metadata_values$FFAR$species) %>% unique(),
-        multiple = T
+      column(
+        6,
+        selectInput(
+          "ffar_trial_type",
+          "Trial Type:",
+          choices = c("", metadata_values$FFAR$tt_label) %>% unique()
+        ),
+        selectInput(
+          "ffar_species",
+          "Species (choose all needed, backspace to remove):",
+          choices = c(metadata_values$FFAR$species) %>% unique(),
+          multiple = T
         )
+      )
+      
+      
     )
   })
   
