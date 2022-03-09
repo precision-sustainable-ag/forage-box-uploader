@@ -383,14 +383,20 @@ server <- function(input, output, session) {
       input$scan_file,
       input$phys_file
     ),
-    switch(
-      metadata_projects %>%
-        filter(label == input$project) %>%
-        pull(value) %>% 
-        paste(collapse = "_"),
-      "FFAR" = remind_ffar(input, output, session),
-      "WCC" = remind_wcc(input, output, session)
-    ),
+    {
+      prj_iv <- InputValidator$new()
+      prj_iv$add_rule("project", sv_required())
+      prj_iv$enable()
+      
+      switch(
+        metadata_projects %>%
+          filter(label == input$project) %>%
+          pull(value) %>% 
+          paste(collapse = "_"),
+        "FFAR" = remind_ffar(input, output, session),
+        "WCC" = remind_wcc(input, output, session)
+      )
+    },
     ignoreInit = T
   )
     
