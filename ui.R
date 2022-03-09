@@ -29,7 +29,8 @@ ui <- fluidPage(
       4,
       selectInput(
         "project", "Project:",
-        choices = c("", metadata_projects$label),
+        choices = c("", metadata_projects$value) %>% 
+          setNames(c("", metadata_projects$label)),
       )
     )
   ),

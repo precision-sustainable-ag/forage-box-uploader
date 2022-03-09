@@ -322,7 +322,7 @@ server <- function(input, output, session) {
       },
     output$metadata_dropdowns <- switch(
       metadata_projects %>% 
-        filter(label == input$project) %>% 
+        filter(value == input$project) %>% 
         pull(value) %>% 
         paste(collapse = "_"),
       "FFAR" = dropdown_ffar(input, output, session),
@@ -332,6 +332,10 @@ server <- function(input, output, session) {
   )
   
 
+  observeEvent(
+    input$show_modal,
+    showModal(modal_component(input, output, session))
+  )
   
   observeEvent(
     list(
@@ -341,7 +345,7 @@ server <- function(input, output, session) {
     ),
     switch(
       metadata_projects %>% 
-        filter(label == input$project) %>% 
+        filter(value == input$project) %>% 
         pull(value) %>% 
         paste(collapse = "_"),
       "FFAR" = update_ffar(input, output, session),
@@ -354,7 +358,7 @@ server <- function(input, output, session) {
     req(input$project)
     
     pattern <- metadata_projects %>% 
-      filter(label == input$project) %>% 
+      filter(value == input$project) %>% 
       pull(value) %>% 
       str_to_lower()
     
@@ -366,7 +370,7 @@ server <- function(input, output, session) {
     
     switch(
       metadata_projects %>% 
-        filter(label == input$project) %>% 
+        filter(value == input$project) %>% 
         pull(value) %>% 
         paste(collapse = "_"),
       "FFAR" = namer_ffar(input, output, session)(),
@@ -386,7 +390,7 @@ server <- function(input, output, session) {
     ),
     switch(
       metadata_projects %>%
-        filter(label == input$project) %>%
+        filter(value == input$project) %>%
         pull(value) %>% 
         paste(collapse = "_"),
       "FFAR" = remind_ffar(input, output, session),

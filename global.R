@@ -327,7 +327,8 @@ dropdown_wcc <- function(input, output, session) {
           c("", .)
         ),
       selectInput(
-        "wcc_field", "Field ID:", 
+        "wcc_field", 
+        actionLink("show_modal", "Field ID (click for map):", icon("map")),
         metadata_values$WCC %>% 
           select(field_label, field) %>% 
           un_enframe() %>% 
@@ -342,11 +343,15 @@ dropdown_wcc <- function(input, output, session) {
   })
 }
 
-modal_wcc <- function(input, output, session) {
+modal_component <- function(input, output, session) {
   modalDialog(
-    title = "Field IDs",
-    h2(input$wcc_location_label),
-    img(src = glue::glue("{input$project}_{input$location}.jpg"))
+    img(
+      src = glue::glue("{input$project}_{input$wcc_location}.jpg"),
+      style = "width:100%;height:100%;",
+      class = "img-responsive"
+      ),
+    easyClose = T,
+    size = "xl"
   )
 }
 
@@ -368,15 +373,6 @@ namer_wcc <- function(input, output, session) {
 }
 
 update_wcc <- function(input, output, session) {
-  # choices_r <- reactive(
-  #   metadata_values$WCC %>% 
-  #     filter(
-  #       str_detect(location, input$wcc_location %||% "")
-  #     ) %>% 
-  #     filter(
-  #       str_detect(field, input$wcc_field %||% "")
-  #     )
-  # )
   
   updateSelectInput(
     session,
