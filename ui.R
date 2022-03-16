@@ -55,14 +55,19 @@ ui <- fluidPage(
     ),
     column(
       8,
-      h2("Scan Metadata"),
-      selectInput(
-        "box_type", "Box Type:",
-        choices = list(
-          "211 - Agrilogger" = "box211",
-          "214 - GeoScout" = "box214v2"
+      fluidRow(
+        column(6, h2("Scan Metadata")),
+        column(
+          6,
+          selectInput(
+            "box_type", "Box Type:",
+            choices = list(
+              "211 - Agrilogger" = "box211",
+              "214 - GeoScout" = "box214v2"
+            ),
+            selected = "box214v2"
+          )
         ),
-        selected = "box214v2"
       ),
       uiOutput("metadata_dropdowns")
     )

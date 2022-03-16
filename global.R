@@ -173,7 +173,8 @@ metadata_values <- list(
     full_join(
       tibble(
         species = c(
-          "All", "B. Napus Dwarf Essex", "B. Napus Winfred", "B. Rapa", "B. Oleracea", 
+          #"All", 
+          "B. Napus Dwarf Essex", "B. Napus Winfred", "B. Rapa", "B. Oleracea", 
           "Crimson Clover", "Rye", "Oat", "Hairy Vetch", "Winter Pea"
         )
       ),
@@ -221,26 +222,70 @@ dropdown_ffar <- function(input, output, session) {
         selectInput(
           "ffar_property",
           "Property:",
-          choices = c("", metadata_values$FFAR$prop_label) %>% unique()
+          # choices = c("", metadata_values$FFAR$prop_label) %>% unique(),
+          choices = metadata_values$FFAR %>% 
+            select(prop_label, prop_value) %>% 
+            distinct() %>% 
+            un_enframe() %>% 
+            {c(" " = "", .)}
         ),
         selectInput(
           "ffar_researcher",
           "Researcher:",
-          choices = c("", metadata_values$FFAR$pi_label) %>% unique()
+          # choices = c("", metadata_values$FFAR$pi_label) %>% unique(),
+          choices = metadata_values$FFAR %>% 
+            select(pi_label, pi_value) %>% 
+            distinct() %>% 
+            un_enframe() %>% 
+            {c(" " = "", .)}
+        ),
+        selectInput(
+          "ffar_trial_type",
+          "Trial Type:",
+          # choices = c("", metadata_values$FFAR$tt_label) %>% unique(),
+          choices = metadata_values$FFAR %>% 
+            select(tt_label, tt_value) %>% 
+            distinct() %>% 
+            un_enframe() %>% 
+            {c(" " = "", .)}
         ),
       ),
       column(
         6,
-        selectInput(
-          "ffar_trial_type",
-          "Trial Type:",
-          choices = c("", metadata_values$FFAR$tt_label) %>% unique()
+        # selectInput(
+        #   "ffar_trial_type",
+        #   "Trial Type:",
+        #   # choices = c("", metadata_values$FFAR$tt_label) %>% unique(),
+        #   choices = metadata_values$FFAR %>% 
+        #     select(tt_label, tt_value) %>% 
+        #     distinct() %>% 
+        #     un_enframe() %>% 
+        #     {c(" " = "", .)}
+        # ),
+        # selectInput(
+        #   "ffar_species",
+        #   "Species (choose all needed, backspace to remove):",
+        #   choices = c(metadata_values$FFAR$species) %>% unique(),
+        #   multiple = T
+        # )
+        div(
+          tags$small("All species in one scan file?"),
+          style = "margin-bottom: .5rem;"
         ),
-        selectInput(
-          "ffar_species",
-          "Species (choose all needed, backspace to remove):",
-          choices = c(metadata_values$FFAR$species) %>% unique(),
-          multiple = T
+        switchInput(
+          "ffar_all_species",
+          value = F,
+          onLabel = "Yes",
+          offLabel = "No",
+        ),
+        conditionalPanel(
+          "!input.ffar_all_species",
+          awesomeCheckboxGroup(
+            "ffar_species",
+            "Species (choose all needed):",
+            choices = c(metadata_values$FFAR$species) %>% unique(),
+            inline = F
+          )
         )
       )
       
@@ -254,26 +299,55 @@ update_ffar <- function(input, output, session) {
   choices_tbl_reactive <- reactive(
     metadata_values$FFAR %>%
       filter(
-        str_detect(collaborator, input$ffar_collaborator %||% "")
+        str_detect(
+          collaborator, 
+          input$ffar_collaborator %||% ""
+          )
       )
   )
 
   updateSelectInput(
     session,
     "ffar_property",
-    choices = c("", choices_tbl_reactive()$prop_label)
+    # choices = c("", choices_tbl_reactive()$prop_label),
+    choices = choices_tbl_reactive() %>% 
+      select(prop_label, prop_value) %>% 
+      distinct() %>% 
+      un_enframe() %>% 
+      {c(" " = "", .)}
   )
   updateSelectInput(
     session,
     "ffar_researcher",
-    choices = c("", choices_tbl_reactive()$pi_label)
+    # choices = c("", choices_tbl_reactive()$pi_label),
+    choices = choices_tbl_reactive() %>% 
+      select(pi_label, pi_value) %>% 
+      distinct() %>% 
+      un_enframe() %>% 
+      {c(" " = "", .)}
   )
-  updateSelectInput(
-    session,
-    "ffar_trial_type",
-    choices = c("", choices_tbl_reactive()$tt_label)
-  )
-  
+  # updateSelectInput(
+  #   session,
+  #   "ffar_trial_type",
+  #   choices = c("", choices_tbl_reactive()$tt_label)
+  # )
+
+  # if (input$ffar_all_species) {
+  #   updateAwesomeCheckboxGroup(
+  #     session,
+  #     "ffar_species",
+  #     "",
+  #     choices = character()
+  #   ) 
+  #   } else {
+  #     updateAwesomeCheckboxGroup(
+  #       session,
+  #       "ffar_species",
+  #       "Species (choose all needed):",
+  #       choices = c(metadata_values$FFAR$species) %>% unique(),
+  #       inline = F
+  #     )
+  #   }
 }
 
 
@@ -284,7 +358,15 @@ namer_ffar <- function(input, output, session) {
       input$ffar_property,
       input$ffar_researcher,
       input$ffar_trial_type
-    )
+      )
+    
+    species = if (isTruthy(input$ffar_all_species)) {
+      "All"
+    } else {
+      input$ffar_species
+    }
+
+    req(species)
     
     paste(
       "FFAR",
@@ -292,10 +374,9 @@ namer_ffar <- function(input, output, session) {
       input$ffar_property,
       input$ffar_researcher,
       input$ffar_trial_type, 
-      paste(input$ffar_species, collapse = "~"),
+      paste(species, collapse = "~"),
       sep = "_"
       )
-    
   })
 }
 
