@@ -274,15 +274,21 @@ dropdown_ffar <- function(input, output, session) {
         ),
         switchInput(
           "ffar_all_species",
+          label = "",
           value = F,
           onLabel = "Yes",
           offLabel = "No",
         ),
+        # materialSwitch(
+        #   "ffar_all_species", 
+        #   label = "",
+        #   value = F
+        # ),
         conditionalPanel(
           "!input.ffar_all_species",
           awesomeCheckboxGroup(
             "ffar_species",
-            "Species (choose all needed):",
+            "Species (choose any needed):",
             choices = c(metadata_values$FFAR$species) %>% unique(),
             inline = F
           )
