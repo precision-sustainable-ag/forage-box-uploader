@@ -132,10 +132,25 @@ server <- function(input, output, session) {
   )
   
   observeEvent(
-    input$submit_more,
-    reset_state$file_active <- F
+    input$submit_more, {
+      reset_state$file_active <- F
+      
+      # Clear Species for FFAR
+      updateAwesomeCheckboxGroup(
+        session,
+        "ffar_species",
+        selected = character(0)
+      )
+      
+      # Clear Species for WCC
+      updateSelectInput(
+        session,
+        "wcc_species",
+        selected = ""
+      )
+    }
   )
-
+  
   # Date things ----
   output$scan_date_calendar <- renderUI({
     update_flag <- !is.null(input$text_date_picker) && 
@@ -504,7 +519,7 @@ server <- function(input, output, session) {
       
       iv_c$is_valid(),
       iv_p$is_valid(),
-      iv_s$is_valid()
+      iv_s$is_valid(),
 
       reset_state$file_active
       )
