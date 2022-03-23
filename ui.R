@@ -2,52 +2,74 @@ library(shiny)
 library(dplyr)
 library(shinyWidgets)
 
-useSweetAlert()
 
 
 
 ui <- fluidPage(
+  useSweetAlert(),
   theme = bslib::bs_theme(version = 5, bootswatch = "yeti"),
   titlePanel("Forage Box Cover Crop File Submission"),
   fluidRow(
     column(
-      6, 
+      4, 
       textInput(
         "username", "Email:"
       )
     ),
     column(
-      6,
+      4,
       searchInput(
-        "password", "Password:",
+        "password", div("Password:", class = "control-label"),
         btnSearch = div(icon("ok", lib = "glyphicon"), style = "font-size:1.25em !important;"), 
         btnReset = NULL, 
         resetValue = ""
       )
+    ),
+    column(
+      4,
+      selectInput(
+        "project", "Project:",
+        choices = c("", metadata_projects$value) %>% 
+          setNames(c("", metadata_projects$label)),
+      )
     )
   ),
   fluidRow(
+    # column(
+    #   4,
+    #   h2("Scan Event Metadata"),
+    #   selectInput(
+    #     "collaborator",
+    #     "Collaborator",
+    #     choices = c("", choices_tbl$collab_label)
+    #   ),
+    #   uiOutput("picker_prop"),
+    #   uiOutput("picker_pi"),
+    #   uiOutput("picker_trial")
+    # ),
     column(
-      6,
-      h2("Scan Event Metadata"),
-      selectInput(
-        "collaborator",
-        "Collaborator",
-        choices = c("", choices_tbl$collab_label)
-      ),
-      uiOutput("picker_prop"),
-      uiOutput("picker_pi"),
-      selectInput(
-        "trial_type",        
-        "Trial Type",
-        choices = c("", choices_tbls$tt$tt_label)
-      )
-    ),
-    column(
-      6,
+      4,
       h2("Scan Event Date"),
       uiOutput("scan_date_calendar"),
       uiOutput("text_date_picker")
+    ),
+    column(
+      8,
+      fluidRow(
+        column(6, h2("Scan Metadata")),
+        column(
+          6,
+          selectInput(
+            "box_type", "Box Type:",
+            choices = list(
+              "211 - Agrilogger" = "box211",
+              "214 - GeoScout" = "box214v2"
+            ),
+            selected = "box214v2"
+          )
+        ),
+      ),
+      uiOutput("metadata_dropdowns")
     )
   ),
   conditionalPanel(

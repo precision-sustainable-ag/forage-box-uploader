@@ -331,6 +331,13 @@
       "Repository": "CRAN",
       "Hash": "9bdabea3a78fd6a0768c2a319d36264e"
     },
+    "shinyvalidate": {
+      "Package": "shinyvalidate",
+      "Version": "0.1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7dd55e732fa2b65f51be835473c30b67"
+    },
     "sourcetools": {
       "Package": "sourcetools",
       "Version": "0.1.7",

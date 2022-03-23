@@ -3,6 +3,7 @@ library(stringr)
 library(purrr)
 
 
+
 library(AzureStor)
 
 
@@ -13,6 +14,15 @@ options(shiny.maxRequestSize = 30*1024^2)
 server <- function(input, output, session) {
   
   # Allow uploads on validation ----
+  observeEvent(
+    input$project, {
+      pw_iv <- InputValidator$new()
+      pw_iv$add_rule("password", sv_required())
+      pw_iv$enable()
+    },
+    ignoreInit = T
+    )
+  
   observeEvent(input$password_search, {
     if (input$password == valid_pw) {
       sendSweetAlert(
@@ -71,6 +81,46 @@ server <- function(input, output, session) {
       accept = "text/plain", 
     )
   })
+  
+
+  observeEvent(
+    input$cal_file, {
+      iv_c <<- InputValidator$new()
+      iv_c$add_rule(
+        "cal_file",
+        ~ if (.$size == 0) { 
+            "File contents must not be blank." 
+          }
+      )
+      iv_c$enable()
+    }
+  )
+  
+  observeEvent(
+    input$scan_file, {
+      iv_s <<- InputValidator$new()
+      iv_s$add_rule(
+        "scan_file",
+        ~ if (.$size == 0) { 
+          "File contents must not be blank." 
+        }
+      )
+      iv_s$enable()
+    }
+  )
+  
+  observeEvent(
+    input$phys_file, {
+      iv_p <<- InputValidator$new()
+      iv_p$add_rule(
+        "phys_file",
+        ~ if (.$size == 0) { 
+          "File contents must not be blank." 
+        }
+      )
+      iv_p$enable()
+    }
+  )
   
   reset_state <- reactiveValues(
     file_active = F
@@ -147,9 +197,22 @@ server <- function(input, output, session) {
     ignoreInit = T
   )
   
+  observeEvent(
+    list(
+      input$cal_file,
+      input$scan_file,
+      input$phys_file
+    ), {
+      iv <- InputValidator$new()
+      # iv$add_rule("scan_date_calendar", sv_required())
+      iv$add_rule("text_date_picker", sv_required())
+      iv$enable()
+    }
+  )
+  
   # File things ----
 
-    output$show_cards <- reactive(
+  output$show_cards <- reactive(
       sum(
         input$cal_file$size %||% 0,
         input$scan_file$size %||% 0,
@@ -270,58 +333,155 @@ server <- function(input, output, session) {
   })
   
   # Metadata things ----
+
   
-  choices_tbl_reactive <- reactive(
-    choices_tbl %>% 
-      filter(
-        str_detect(collab_label, input$collaborator %||% "")
-      )
+  
+  observeEvent(
+    {
+      input$project
+      },
+    output$metadata_dropdowns <- switch(
+      metadata_projects %>% 
+        filter(value == input$project) %>% 
+        pull(value) %>% 
+        paste(collapse = "_"),
+      "FFAR" = dropdown_ffar(input, output, session),
+      "WCC" = dropdown_wcc(input, output, session)
+    ),
+    ignoreInit = T
   )
   
-  output$picker_prop <- renderUI(
-    selectInput(
-        "property",
-        "Property",
-        choices = c("", choices_tbl_reactive()$prop_label)
-      )
-  )  
+
+  observeEvent(
+    input$show_modal,
+    showModal(modal_component(input, output, session))
+  )
   
-  output$picker_pi <- renderUI(
-    selectInput(
-        "researcher",
-        "Researcher",
-        choices = c("", choices_tbl_reactive()$pi_label)
-      )
-  )  
+  observeEvent(
+    list(
+      input$ffar_collaborator,
+      input$wcc_location,
+      input$wcc_field
+    ),
+    switch(
+      metadata_projects %>% 
+        filter(value == input$project) %>% 
+        pull(value) %>% 
+        paste(collapse = "_"),
+      "FFAR" = update_ffar(input, output, session),
+      "WCC" = update_wcc(input, output, session)
+    ),
+    ignoreInit = T
+  )
+  
+  prefix_reactive <- reactive({
+    req(input$project)
+    
+    pattern <- metadata_projects %>% 
+      filter(value == input$project) %>% 
+      pull(value) %>% 
+      str_to_lower()
+    
+    pattern <- paste("^", pattern, "_", sep = "")
+    purrr::map(
+      str_subset(names(input), pattern),
+      ~input[[.x]]
+    )
+    
+    switch(
+      metadata_projects %>% 
+        filter(value == input$project) %>% 
+        pull(value) %>% 
+        paste(collapse = "_"),
+      "FFAR" = namer_ffar(input, output, session)(),
+      "WCC" = namer_wcc(input, output, session)()
+    )
+  })
+  
+  # output$name_preview <- renderText({
+  #   prefix_reactive()
+  # })
+  
+  observeEvent(
+    list(
+      input$cal_file,
+      input$scan_file,
+      input$phys_file
+    ),
+    switch(
+      metadata_projects %>%
+        filter(value == input$project) %>%
+        pull(value) %>% 
+        paste(collapse = "_"),
+      "FFAR" = remind_ffar(input, output, session),
+      "WCC" = remind_wcc(input, output, session)
+    ),
+    ignoreInit = T
+  )
+    
+  ####
+  
+  # choices_tbl_reactive <- reactive(
+  #   choices_tbl %>% 
+  #     filter(
+  #       str_detect(collab_label, input$collaborator %||% "")
+  #     )
+  # )
+  # 
+  # output$picker_prop <- renderUI(
+  #   selectInput(
+  #       "property",
+  #       "Property",
+  #       choices = c("", choices_tbl_reactive()$prop_label)
+  #     )
+  # )  
+  # 
+  # output$picker_pi <- renderUI(
+  #   selectInput(
+  #       "researcher",
+  #       "Researcher",
+  #       choices = c("", choices_tbl_reactive()$pi_label)
+  #     )
+  # )  
+  # 
+  # output$picker_trial <- renderUI(
+  #   selectInput(
+  #       "trial_type",
+  #       "Trial Type",
+  #       choices = c("", choices_tbl_reactive()$tt_label)
+  #     )
+  # )  
   
   fixes <- reactive({
     input$submit_more
     
     req(
-      input$collaborator,
-      input$property,
-      input$researcher,
-      input$trial_type,
+      # input$collaborator,
+      # input$property,
+      # input$researcher,
+      # input$trial_type,
       input$scan_date_calendar
     )
-    id_row <- choices_tbl %>%
-      filter(
-        collab_label == input$collaborator,
-        prop_label == input$property,
-        pi_label == input$researcher
-      )
-
-    trial <- choices_tbls$tt %>%
-      filter(tt_label == input$trial_type) %>%
-      pull(tt_value)
+    # id_row <- choices_tbl %>%
+    #   filter(
+    #     collab_label == input$collaborator,
+    #     prop_label == input$property,
+    #     pi_label == input$researcher,
+    #     tt_label == input$trial_type
+    #   )
 
     prefix <- paste(
-      id_row$collaborator,
-      trial,
-      id_row$prop_value,
-      id_row$pi_value,
+      input$box_type, 
+      prefix_reactive(), 
       sep = "_"
-    )
+      )
+    #   paste(
+    #   id_row$collaborator,
+    #   id_row$tt_value, 
+    #   id_row$prop_value,
+    #   id_row$pi_value,
+    #   sep = "_"
+    # )
 
     postfix <- paste(
       str_remove_all(input$scan_date_calendar, '-'),
@@ -341,6 +501,11 @@ server <- function(input, output, session) {
       input$scan_file,
       input$phys_file,
       fixes(),
+      
+      iv_c$is_valid(),
+      iv_p$is_valid(),
+      iv_s$is_valid()
+
       reset_state$file_active
       )
     
