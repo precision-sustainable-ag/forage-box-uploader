@@ -131,6 +131,8 @@ ui <- fluidPage(
       12,
       br(),
       uiOutput("submit_button"),
+      br(), br(),
+      uiOutput("submit_more"),
       br(), br()
     )
   )
