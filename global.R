@@ -197,10 +197,15 @@ metadata_values <- list(
     ),
   WCC = tribble(
     ~location,    ~location_label,    ~field,    ~field_label,    ~species,
-    "onfarm",     "Eastern Shore",    "jb",      "Joe Brown",     "ABC",
-    "BARC-Prod",  "BARC Production",  "130",     "1-30",          "DEF",
-    "BARC-Prod",  "BARC",             "NASA",    "NASA Hill",     "GHI",
-    "BARC-SF",    "South Farm",       "MIT",     "Across from the pumpkins", "JKL"
+    "BARC-Prod",  "BARC Production",  "APU-1",   "APU-1",         "Cereal Rye",
+    "BARC-Prod",  "BARC Production",  "2-32C",   "2-32C",         "Cereal Rye",
+    "BARC-Prod",  "BARC Production",  "1-37",    "1-37",          "Triticale",
+    "BARC-Prod",  "BARC Production",  "2-32A",   "2-32A",         "Triticale",
+    "BARC-Prod",  "BARC Production",  "5-9",     "5-9",           "Wheat",
+    "BARC-Prod",  "BARC Production",  "5-11",    "5-11",          "Wheat",
+    "BARC-SF",    "BARC South Farm",  "SE-14",   "SE-14",         "Barley",
+    "BARC-Prod",  "BARC Production",  "2-36",    "2-36",          "Barley",
+    "BARC-SF",    "BARC South Farm",  "SD-5",    "SD-5",          "Cereal Rye~Crimson Clover",
   ) 
 )
 #### modules ----
