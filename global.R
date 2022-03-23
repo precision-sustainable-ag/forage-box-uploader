@@ -437,11 +437,15 @@ dropdown_wcc <- function(input, output, session) {
 
 modal_component <- function(input, output, session) {
   modalDialog(
-    img(
-      src = glue::glue("{input$project}_{input$wcc_location}.jpg"),
-      style = "width:100%;height:100%;",
-      class = "img-responsive"
-      ),
+    if (input$wcc_location != "") {
+      img(
+        src = glue::glue("{input$project}_{input$wcc_location}.jpg"),
+        style = "width:100%;height:100%;",
+        class = "img-responsive"
+      )
+    } else {
+      h3("Select a location!")
+    },
     easyClose = T,
     size = "xl"
   )

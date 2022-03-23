@@ -82,7 +82,7 @@ server <- function(input, output, session) {
   
   observeEvent(
     input$cal_file, {
-      iv_c <- InputValidator$new()
+      iv_c <<- InputValidator$new()
       iv_c$add_rule(
         "cal_file",
         ~ if (.$size == 0) { 
@@ -95,7 +95,7 @@ server <- function(input, output, session) {
   
   observeEvent(
     input$scan_file, {
-      iv_s <- InputValidator$new()
+      iv_s <<- InputValidator$new()
       iv_s$add_rule(
         "scan_file",
         ~ if (.$size == 0) { 
@@ -108,7 +108,7 @@ server <- function(input, output, session) {
   
   observeEvent(
     input$phys_file, {
-      iv_p <- InputValidator$new()
+      iv_p <<- InputValidator$new()
       iv_p$add_rule(
         "phys_file",
         ~ if (.$size == 0) { 
