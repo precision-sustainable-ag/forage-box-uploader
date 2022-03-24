@@ -83,44 +83,39 @@ server <- function(input, output, session) {
   })
   
 
-  observeEvent(
-    input$cal_file, {
-      iv_c <<- InputValidator$new()
-      iv_c$add_rule(
-        "cal_file",
-        ~ if (.$size == 0) { 
-            "File contents must not be blank." 
-          }
-      )
-      iv_c$enable()
+  iv_c <- InputValidator$new()
+  iv_c$add_rule(
+    "cal_file",
+    ~ if (is.null(.)) { 
+      return (NULL) 
+    } else if (.$size == 0) { 
+      "File contents must not be blank." 
     }
   )
+  iv_c$enable()
   
-  observeEvent(
-    input$scan_file, {
-      iv_s <<- InputValidator$new()
-      iv_s$add_rule(
-        "scan_file",
-        ~ if (.$size == 0) { 
-          "File contents must not be blank." 
-        }
-      )
-      iv_s$enable()
+  iv_s <- InputValidator$new()
+  iv_s$add_rule(
+    "scan_file",
+    ~ if (is.null(.)) { 
+      return (NULL) 
+    } else if (.$size == 0) { 
+      "File contents must not be blank." 
     }
   )
+  iv_s$enable()
   
-  observeEvent(
-    input$phys_file, {
-      iv_p <<- InputValidator$new()
-      iv_p$add_rule(
-        "phys_file",
-        ~ if (.$size == 0) { 
-          "File contents must not be blank." 
-        }
-      )
-      iv_p$enable()
+  iv_p <- InputValidator$new()
+  iv_p$add_rule(
+    "phys_file",
+    ~ if (is.null(.)) { 
+      return (NULL) 
+    } else if (.$size == 0) { 
+      "File contents must not be blank." 
     }
   )
+  iv_p$enable()
+
   
   reset_state <- reactiveValues(
     file_active = F
