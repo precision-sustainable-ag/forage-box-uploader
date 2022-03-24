@@ -137,6 +137,13 @@ server <- function(input, output, session) {
         selected = character(0)
       )
       
+      # Reset Species switch for FFAR
+      updateMaterialSwitch(
+        session,
+        "ffar_all_species",
+        value = F
+      )
+      
       # Clear Species for WCC
       updateSelectInput(
         session,
