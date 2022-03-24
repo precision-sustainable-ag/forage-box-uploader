@@ -528,22 +528,34 @@ server <- function(input, output, session) {
       )
   })
   
+  output$scan_ready <- reactive({
+    return(!is.null(input$scan_file) & reset_state$file_active)
+  })
+  
+  # SOLUTION (2013-08-17)
+  # activate the output so it runs although not displayed
+  # ref: https://groups.google.com/forum/#!msg/shiny-discuss/S15Vp7P72eg/yNv_O-axrd8J
+  outputOptions(output, "scan_ready", suspendWhenHidden = FALSE)
+  
   output$submit_more <- renderUI({
     
     req(
       input$cal_file,
-      input$scan_file,
+      #input$scan_file,
       input$phys_file,
-      fixes()
+      #fixes()
     )
-    
-    actionBttn(
-      "submit_more", "Reset and submit more files",
-      block = T,
-      style = "fill",
-      size = "lg",
-      color = "default"
+    conditionalPanel(
+      "output.scan_ready",
+      actionBttn(
+        "submit_more", "Reset and submit more files",
+        block = T,
+        style = "fill",
+        size = "lg",
+        color = "default"
+      )
     )
+
   })
   
   observeEvent(
